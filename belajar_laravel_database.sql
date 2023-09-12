@@ -12,6 +12,8 @@ create table categories
 
 desc categories;
 
+select * from categories;
+
 create table counters
 (
     id      varchar(100) not null primary key,

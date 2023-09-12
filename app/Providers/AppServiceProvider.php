@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         DB::listen(function (QueryExecuted $query) {
-            Log::info($query->sql . " - " . $query->time);
+            Log::info($query->sql);
         });
     }
 }
