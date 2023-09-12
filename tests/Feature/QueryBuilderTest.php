@@ -178,4 +178,67 @@ class QueryBuilderTest extends TestCase
         $collection = DB::table("categories")->whereYear("created_at", "2020")->get();
         self::assertCount(4, $collection);
     }
+
+    // QUERY BUILDER UPDATE
+    public function testUpdate()
+    {
+        $this->insertCategories();
+
+        DB::table('categories')->where("id", "=", "SMARTPHONE")->update([
+            "name" => "Handphone"
+        ]);
+
+        $result = DB::table("categories")->where("name", "=", "Handphone")->get();
+        self::assertEquals($result[0]->name, "Handphone");
+
+        $result = DB::table("categories")->where("name", "=", "Smartphone")->get();
+        // self::assertNotNull($result);
+        var_dump($result);
+    }
+
+    public function testUpdateOrInsert()
+    {
+        DB::table('categories')->updateOrInsert(
+            [
+                "id" => "VOUCHER"
+            ],
+            [
+                "name" => "Voucher",
+                "description" => "Ticket and Voucher",
+                "created_at" => "2020-10-10 10:10:10"
+            ]
+        );
+
+        $result = DB::table('categories')->where("id", "=", "VOUCHER")->get();
+        self::assertNotNull($result);
+        self::assertEquals("Voucher", $result[0]->name);
+
+        foreach ($result as $item) {
+            Log::info(json_encode($item));
+        }
+    }
+
+    // INCREMENT
+    public function testIncrement()
+    {
+        DB::table("counters")->increment("counter", 1);
+
+        $result = DB::select('select * from counters');
+        self::assertNotNull($result);
+        foreach ($result as $item) {
+            Log::info(json_encode($item));
+        }
+    }
+
+    // DECREMENT
+    public function testDecrement()
+    {
+        DB::table("counters")->where("id", "=", "sample")->decrement("counter", 1);
+
+        $result = DB::select('select * from counters');
+        self::assertNotNull($result);
+        foreach ($result as $item) {
+            Log::info(json_encode($item));
+        }
+    }
 }
