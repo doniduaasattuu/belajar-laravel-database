@@ -350,7 +350,8 @@ class QueryBuilderTest extends TestCase
         }
     }
 
-    public function testQueryBuilderChunk()
+    // CHUNK
+    public function testChunk()
     {
         $this->insertManyCategories();
 
@@ -365,5 +366,20 @@ class QueryBuilderTest extends TestCase
                 }
                 Log::info("End Chunk");
             });
+    }
+
+    // LAZY
+    public function testLazy()
+    {
+        $this->insertManyCategories();
+
+        $collection = DB::table("categories")->orderBy("created_at")->lazy(10);
+        // $collection = DB::table("categories")->orderBy("created_at")->lazy(10)->take(3); // mengambil 3 hasil pertama dari query yang pertama (query dilakukan sekali)
+        // $collection = DB::table("categories")->orderBy("created_at")->lazy()->take(10); // mengambil 10 hasil dari query dengan limit 1000 
+        self::assertNotNull($collection);
+
+        $collection->each(function ($item) {
+            Log::info(json_encode($item));
+        });
     }
 }
