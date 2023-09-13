@@ -301,4 +301,22 @@ class QueryBuilderTest extends TestCase
             Log::info(json_encode($item, JSON_PRETTY_PRINT));
         }
     }
+
+    public function testOrdering()
+    {
+        $this->insertProducts();
+
+        $collection = DB::table("products")
+            ->whereNotNull("id")
+            ->orderBy("price", "desc")
+            ->orderBy("name")
+            ->get();
+
+        self::assertNotNull($collection);
+        self::assertCount(2, $collection);
+
+        foreach ($collection as $item) {
+            Log::info(json_encode($item));
+        }
+    }
 }
