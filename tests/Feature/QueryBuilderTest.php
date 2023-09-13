@@ -286,7 +286,7 @@ class QueryBuilderTest extends TestCase
         ]);
     }
 
-    public function testJoin()
+    public function testQueryQuilderJoin()
     {
         $this->insertProducts();
 
@@ -302,7 +302,8 @@ class QueryBuilderTest extends TestCase
         }
     }
 
-    public function testOrdering()
+    // QUERY BUILDER ORDERING
+    public function testQueryQuilderOrdering()
     {
         $this->insertProducts();
 
@@ -315,6 +316,23 @@ class QueryBuilderTest extends TestCase
         self::assertNotNull($collection);
         self::assertCount(2, $collection);
 
+        foreach ($collection as $item) {
+            Log::info(json_encode($item));
+        }
+    }
+
+    // QUERY BUILDER PAGING
+    public function testQueryBuilderPaging()
+    {
+        $this->insertCategories();
+
+        $collection = DB::table("categories")
+            ->skip(0)
+            ->take(2)
+            ->get();
+
+        self::assertNotNull($collection);
+        self::assertCount(2, $collection);
         foreach ($collection as $item) {
             Log::info(json_encode($item));
         }
