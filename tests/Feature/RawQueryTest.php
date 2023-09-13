@@ -12,6 +12,7 @@ class RawQueryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        DB::delete('delete from products');
         DB::delete('delete from categories');
     }
 

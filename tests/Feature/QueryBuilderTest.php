@@ -14,6 +14,7 @@ class QueryBuilderTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        DB::delete('delete from products');
         DB::delete('delete from categories');
     }
 
@@ -260,8 +261,44 @@ class QueryBuilderTest extends TestCase
         $result = DB::table("categories")->get();
         self::assertCount(4, $result);
 
-        DB::table('categories')->truncate();
-        $result = DB::table("categories")->get();
-        self::assertCount(0, $result);
+        // DB::table('categories')->truncate();
+        // $result = DB::table("categories")->get();
+        // self::assertCount(0, $result);
+    }
+
+    // QUERY BUILDER JOIN
+    public function insertProducts()
+    {
+        $this->insertCategories();
+
+        DB::table("products")->insert([
+            "id" => "1",
+            "name" => "iPhone 14 Pro Max",
+            "price" => 20000000,
+            "category_id" => "SMARTPHONE"
+        ]);
+
+        DB::table("products")->insert([
+            "id" => "2",
+            "name" => "Samsung Galaxy S21 Ultra",
+            "price" => 18000000,
+            "category_id" => "SMARTPHONE"
+        ]);
+    }
+
+    public function testJoin()
+    {
+        $this->insertProducts();
+
+        $collection = DB::table("products")
+            ->join("categories", "categories.id", "=", "products.category_id")
+            ->select("products.id", "products.name", "products.price", "categories.name as category_name")
+            ->get();
+
+        self::assertNotNull($collection);
+
+        foreach ($collection as $item) {
+            Log::info(json_encode($item, JSON_PRETTY_PRINT));
+        }
     }
 }

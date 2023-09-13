@@ -14,10 +14,11 @@ class TransactionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        DB::delete('delete from products');
         DB::delete('delete from categories');
     }
 
-    public function testTransactioSuccess()
+    public function testTransactionSuccess()
     {
         DB::transaction(function () {
             DB::insert("insert into categories (id, name, description, created_at) values (?, ?, ?, ?)", [
@@ -33,7 +34,7 @@ class TransactionTest extends TestCase
         self::assertCount(2, $results);
     }
 
-    public function testTransactioFailed()
+    public function testTransactionFailed()
     {
         try {
             DB::transaction(function () {
