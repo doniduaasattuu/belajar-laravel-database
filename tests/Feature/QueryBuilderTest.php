@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
@@ -336,5 +337,33 @@ class QueryBuilderTest extends TestCase
         foreach ($collection as $item) {
             Log::info(json_encode($item));
         }
+    }
+
+    public function insertManyCategories()
+    {
+        for ($i = 0; $i < 100; $i++) {
+            DB::table("categories")->insert([
+                "id" => "CATEGORY - $i",
+                "name" => "Category $i",
+                // "created_at" => "2020-10-10 10:10:10"
+            ]);
+        }
+    }
+
+    public function testQueryBuilderChunk()
+    {
+        $this->insertManyCategories();
+
+        DB::table('categories')
+            ->orderBy("created_at")
+            ->chunk(10, function ($categories) {
+                self::assertNotNull($categories);
+                self::assertCount(10, $categories);
+                Log::info("Start Chunk");
+                foreach ($categories as $item) {
+                    Log::info(json_encode($item));
+                }
+                Log::info("End Chunk");
+            });
     }
 }
