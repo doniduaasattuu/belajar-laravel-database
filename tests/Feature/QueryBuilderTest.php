@@ -241,4 +241,27 @@ class QueryBuilderTest extends TestCase
             Log::info(json_encode($item));
         }
     }
+
+    // QUERY BUILDER DELETE
+    public function testDelete()
+    {
+        $this->insertCategories();
+
+        DB::table("categories")->whereNotNull("id")->delete("SMARTPHONE");
+
+        $result = DB::table("categories")->where("id", "=", "SMARTPHONE")->get();
+        self::assertCount(0, $result);
+    }
+
+    // QUERY BUILDER TRUNCATE
+    public function testTruncate()
+    {
+        $this->insertCategories();
+        $result = DB::table("categories")->get();
+        self::assertCount(4, $result);
+
+        DB::table('categories')->truncate();
+        $result = DB::table("categories")->get();
+        self::assertCount(0, $result);
+    }
 }
