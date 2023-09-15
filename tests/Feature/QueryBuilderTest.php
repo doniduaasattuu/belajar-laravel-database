@@ -194,8 +194,6 @@ class QueryBuilderTest extends TestCase
         self::assertEquals($result[0]->name, "Handphone");
 
         $result = DB::table("categories")->where("name", "=", "Smartphone")->get();
-        // self::assertNotNull($result);
-        var_dump($result);
     }
 
     public function testUpdateOrInsert()
@@ -432,5 +430,61 @@ class QueryBuilderTest extends TestCase
         self::assertEquals(2, $collection[0]->id);
         self::assertEquals(18000000, $collection[0]->min_price);
         self::assertEquals(20000000, $collection[0]->max_price);
+    }
+
+    public function insertProductsFood()
+    {
+        DB::table("products")->insert([
+            "id" => "3",
+            "name" => "Mie Ayam",
+            "price" => 20000,
+            "category_id" => "FOOD"
+        ]);
+
+        DB::table("products")->insert([
+            "id" => "4",
+            "name" => "Bakso",
+            "price" => 20000,
+            "category_id" => "FOOD"
+        ]);
+    }
+
+    public function testGroupBy()
+    {
+        $this->insertProducts();
+        $this->insertProductsFood();
+
+        $collection = DB::table("products")
+            ->select("category_id", DB::raw("count(*) as total_product"), DB::raw("sum(price) as total_price"))
+            ->groupBy("category_id")
+            ->orderBy("category_id", "desc")
+            ->get();
+
+        self::assertNotNull($collection);
+        $collection->each(function ($item) {
+            Log::info(json_encode($item, JSON_PRETTY_PRINT));
+        });
+    }
+
+    public function testGroupByHaving()
+    {
+        $this->insertProducts();
+        $this->insertProductsFood();
+
+        $collection = DB::table("products")
+            ->select("category_id", DB::raw("count(*) as total_product"), DB::raw("sum(price) as total_price"))
+            ->groupBy("category_id")
+            ->orderBy("category_id", "desc")
+            ->having(DB::raw("sum(price)"), ">", 40000)
+            ->get();
+
+        self::assertNotNull($collection);
+        self::assertEquals("SMARTPHONE", $collection[0]->category_id);
+        self::assertEquals("38000000", $collection[0]->total_price);
+        self::assertEquals("2", $collection[0]->total_product);
+
+        $collection->each(function ($item) {
+            Log::info(json_encode($item, JSON_PRETTY_PRINT));
+        });
     }
 }
