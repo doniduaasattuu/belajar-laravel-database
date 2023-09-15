@@ -432,6 +432,7 @@ class QueryBuilderTest extends TestCase
         self::assertEquals(20000000, $collection[0]->max_price);
     }
 
+    // QUERY BUILDER GROUPING
     public function insertProductsFood()
     {
         DB::table("products")->insert([
@@ -482,6 +483,23 @@ class QueryBuilderTest extends TestCase
         self::assertEquals("SMARTPHONE", $collection[0]->category_id);
         self::assertEquals("38000000", $collection[0]->total_price);
         self::assertEquals("2", $collection[0]->total_product);
+
+        $collection->each(function ($item) {
+            Log::info(json_encode($item, JSON_PRETTY_PRINT));
+        });
+    }
+
+    // QUERY BUILDER LOCKING
+    public function testQueryBuilderLocking()
+    {
+        $this->insertProducts();
+
+        $collection = DB::table("products")
+            ->where("id", "=", '1')
+            ->lockForUpdate()
+            ->get();
+
+        self::assertNotNull($collection);
 
         $collection->each(function ($item) {
             Log::info(json_encode($item, JSON_PRETTY_PRINT));
