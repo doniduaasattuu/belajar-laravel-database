@@ -42,9 +42,43 @@ drop table products;
 drop table categories;
 
 drop table counters;
+drop table migrations;
 
 show tables;
 
 select * from migrations;
 
 select * from categories;
+
+CREATE TABLE
+    `categories` (
+        `id` varchar(100) NOT NULL,
+        `name` varchar(100) NOT NULL,
+        `description` text DEFAULT NULL,
+        `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci
+
+CREATE TABLE
+`counters` (
+    `id` varchar(100) NOT NULL,
+    `counter` int(11) NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci
+
+CREATE TABLE
+    `products` (
+        `id` varchar(100) NOT NULL,
+        `name` varchar(100) NOT NULL,
+        `description` text DEFAULT NULL,
+        `price` int(11) NOT NULL,
+        `category_id` varchar(100) NOT NULL,
+        `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+        PRIMARY KEY (`id`),
+        KEY `fk_category_id` (`category_id`),
+        CONSTRAINT `fk_category_id` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci
+
+DROP TABLE products;
+DROP TABLE counters;
+DROP TABLE categories;
