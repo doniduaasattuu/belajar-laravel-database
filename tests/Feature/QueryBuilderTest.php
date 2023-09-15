@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\CategorySeeder;
+use Database\Seeders\ProductSeeder;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -59,26 +61,7 @@ class QueryBuilderTest extends TestCase
     // QUERY BUILDER WHERE
     public function insertCategories()
     {
-        DB::table("categories")->insert([
-            "id" => "SMARTPHONE",
-            "name" => "Smartphone",
-            "created_at" => "2020-10-10 10:10:10"
-        ]);
-        DB::table("categories")->insert([
-            "id" => "FOOD",
-            "name" => "Food",
-            "created_at" => "2020-10-10 10:10:10"
-        ]);
-        DB::table("categories")->insert([
-            "id" => "LAPTOP",
-            "name" => "Laptop",
-            "created_at" => "2020-10-10 10:10:10"
-        ]);
-        DB::table("categories")->insert([
-            "id" => "FASHION",
-            "name" => "Fashion",
-            "created_at" => "2020-10-10 10:10:10"
-        ]);
+        $this->seed(CategorySeeder::class);
     }
 
     public function testQueryBuilderWhere()
@@ -270,19 +253,7 @@ class QueryBuilderTest extends TestCase
     {
         $this->insertCategories();
 
-        DB::table("products")->insert([
-            "id" => "1",
-            "name" => "iPhone 14 Pro Max",
-            "price" => 20000000,
-            "category_id" => "SMARTPHONE"
-        ]);
-
-        DB::table("products")->insert([
-            "id" => "2",
-            "name" => "Samsung Galaxy S21 Ultra",
-            "price" => 18000000,
-            "category_id" => "SMARTPHONE"
-        ]);
+        $this->seed(ProductSeeder::class);
     }
 
     public function testQueryQuilderJoin()
