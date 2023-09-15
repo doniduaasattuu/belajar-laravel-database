@@ -505,4 +505,45 @@ class QueryBuilderTest extends TestCase
             Log::info(json_encode($item, JSON_PRETTY_PRINT));
         });
     }
+
+    // PAGINATION
+    public function testPagination()
+    {
+        $this->insertManyCategories();
+
+        $pagination = DB::table("categories")
+            ->paginate(perPage: "10", columns: "*", page: 4);
+
+        foreach ($pagination as $page) {
+            Log::info(json_encode($page));
+        }
+
+        self::assertEquals(4, $pagination->currentPage());
+        self::assertEquals(10, $pagination->perPage()); // dalam 1 halaman ada 10 record
+        self::assertEquals(10, $pagination->lastPage()); // di halaman terakhir ada 10 record
+        self::assertEquals(100, $pagination->total()); // total record dai semua halaman 
+        self::assertEquals(10, count($pagination->items())); // total halaman dari categories jika di bagi 10
+    }
+
+    public function testIterateAllPagination()
+    {
+        $this->insertManyCategories();
+
+        $pages = 1;
+        while (true) {
+            $pagination = DB::table("categories")
+                ->orderBy("created_at", "asc")
+                ->paginate(perPage: "10", columns: "*", page: $pages);
+
+            self::assertNotNull($pagination);
+            if ($pagination->isEmpty()) {
+                break;
+            } else {
+                $pages++;
+                foreach ($pagination as $page) {
+                    Log::info(json_encode($page));
+                }
+            }
+        }
+    }
 }
